@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './question.dart';
-import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 void main() {
   runApp(FirstFlutter());
@@ -9,38 +9,61 @@ void main() {
 class FirstFlutter extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _FirstFlutterState();
   }
 }
 
 class _FirstFlutterState extends State<FirstFlutter> {
-  final questions = const [
+  final _questions = const [
     {
       'questionText': 'What\'s your fav color?',
-      'answers': ['Black', 'White', 'Purple'],
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'White', 'score': 1},
+        {'text': 'Purple', 'score': 5},
+      ],
     },
     {
       'questionText': 'What\'s your fav drink?',
-      'answers': ['Water', 'Beer', 'Wine'],
+      'answers': [
+        {'text': 'Water', 'score': 1},
+        {'text': 'Beer', 'score': 10},
+        {'text': 'Wine', 'score': 5},
+      ],
     },
     {
       'questionText': 'What\'s your fav exercise?',
-      'answers': ['Walking', 'Yoga', 'Football'],
+      'answers': [
+        {'text': 'Walking', 'score': 1},
+        {'text': 'Yoga', 'score': 5},
+        {'text': 'Football', 'score': 10},
+      ],
     },
     {
       'questionText': 'What\'s your fav animal?',
-      'answers': ['Cat', 'Dog', 'Bird'],
+      'answers': [
+        {'text': 'Cat', 'score': 10},
+        {'text': 'Dog', 'score': 5},
+        {'text': 'Bird', 'score': 1},
+      ],
     },
   ];
 
   var _questionIndex = 0;
-  void _answerQuestion() {
-    if (_questionIndex < questions.length) {}
+  var _totalScore = 0;
+  void _answerQuestion(int score) {
+    _totalScore += score;
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
-    print(_questionIndex);
+    print(_totalScore);
+  }
+
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
   }
 
   @override
@@ -50,17 +73,13 @@ class _FirstFlutterState extends State<FirstFlutter> {
         appBar: AppBar(
           title: Text('My first flutter app'),
         ),
-        body: _questionIndex < questions.length
-            ? Column(children: [
-                Question(
-                  (questions[_questionIndex]['questionText'] as String),
-                ),
-                ...(questions[_questionIndex]['answers'] as List<String>)
-                    .map((answer) {
-                  return Answer(_answerQuestion, answer);
-                }).toList()
-              ])
-            : Center(child: Text('You made it!')),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questionIndex: _questionIndex,
+                questions: _questions,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
